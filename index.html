@@ -17,7 +17,7 @@
 
             let countyData;
             let educationData;
-            const [color1, color2, color3, color4, color5] = ['#231942', '#5e548e', '#9f86c0', '#be95c4', '#e0b1cb'];
+            const [color1, color2, color3, color4, color5] = [['#231942', 15], ['#5e548e', 30], ['#9f86c0', 45], ['#be95c4', 60], ['#e0b1cb', 75]];
 
             const container = d3
                 .select("body")
@@ -44,6 +44,14 @@
                 .attr('width', 1000)
                 .attr('height', 800);
             
+            const legend = svg
+                .append("g")
+                .attr("id", "legend")
+
+            const legendScale = d3
+                .scaleBand()
+                .domain([])
+
             const canvas = svg
                 .append("g")
                 .attr("id", "canvas");
@@ -61,16 +69,16 @@
                             return item['fips'] === id;
                         });
                         let percentage = county['bachelorsOrHigher'];
-                        if(percentage <= 15){
-                            return color1;
-                        }else if(percentage <= 30){
-                            return color2;
-                        }else if(percentage <= 45){
-                            return color3;
-                        }else if(percentage <= 60){
-                            return color4;
+                        if(percentage <= color1[1]){
+                            return color1[0];
+                        }else if(percentage <= color2[1]){
+                            return color2[0];
+                        }else if(percentage <= color2[1]){
+                            return color3[0];
+                        }else if(percentage <= color3[1]){
+                            return color4[0];
                         }else{
-                            return color5;
+                            return color5[0];
                         }
                     })
                     .attr("data-fips", (countyDataItem)=>countyDataItem.id)

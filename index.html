@@ -6,8 +6,14 @@
         <title>Choropleth Chart</title>
     </head>
     <body>
+        <script src="https://unpkg.com/topojson-client@3"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
         <script type="module">
             import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+            //import * as topojson from "topojson-client"
+
+            let feature = topojson.feature(topology, "foo");
 
             const svg = d3
                 .select("body")
@@ -17,7 +23,7 @@
             const CountyDataJSON = "https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json"
 
             Promise.all([d3.json(EducationDataJSON), d3.json(CountyDataJSON)])
-            .then(data => ready(data[0], data[1]))
+            .then(data => console.log(data[0], data[1]))
             .catch(err => console.log(err));
 
             function ready(us, education){

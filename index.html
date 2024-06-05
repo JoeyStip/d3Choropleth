@@ -17,7 +17,22 @@
 
             let countyData;
             let educationData;
-            const [color1, color2, color3, color4, color5] = [['#231942', 15], ['#5e548e', 30], ['#9f86c0', 45], ['#be95c4', 60], ['#e0b1cb', 75]];
+            const colors = [
+                {code:'#231942', limit: 15}, 
+                {code:'#5e548e', limit: 30}, 
+                {code:'#9f86c0', limit: 45}, 
+                {code: '#be95c4', limit: 60}, 
+                {code:'#e0b1cb', limit: 75}
+            ];
+            const margin = {
+                left: 50,
+                right: 50,
+                bottom: 50,
+                top: 80
+            };
+
+            const w = 1200 - margin.left - margin.right;
+            const h = 800 - margin.top - margin.bottom;
 
             const container = d3
                 .select("body")
@@ -41,16 +56,42 @@
             const svg = d3
                 .select('#container')
                 .append('svg')
-                .attr('width', 1000)
-                .attr('height', 800);
+                .attr('width', w)
+                .attr('height', h)
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             
-            const legend = svg
-                .append("g")
-                .attr("id", "legend")
+            const drawLegend =()=>{
+                const legendW = 300;
+                const legendH = 200;
+                const bachelorsOrHigher = educationData.map((x)=>x.bachelorsOrHigher);
+                const minBachelors = Math.min(...bachelorsOrHigher);
+                const maxBachelors = Math.max(...bachelorsOrHigher);
 
-            const legendScale = d3
-                .scaleBand()
-                .domain([])
+                
+
+                const legendThresholdScale = d3
+                    .scaleBand()
+                    .domain([colors.map((x)=>x.limit)])
+                    .range([colors.map((x)=>x.code)]);
+
+                const legendXScale = d3
+                    .scaleLinear()
+                    .domain([minBachelors, maxBachelors])
+                    .range([0, legendW]);
+
+                const legendAxis = d3
+                    .axisBottom()
+                    .scale(legendXScale);
+
+                const legend = svg
+                    .append("g")
+                    .attr("id", "legend")
+                    .attr("transform", "translate(" + (w*.66) + ",15)")
+                
+                legend
+                    .append('g')
+                    .call(legendAxis);
+            };
 
             const canvas = svg
                 .append("g")
@@ -69,16 +110,16 @@
                             return item['fips'] === id;
                         });
                         let percentage = county['bachelorsOrHigher'];
-                        if(percentage <= color1[1]){
-                            return color1[0];
-                        }else if(percentage <= color2[1]){
-                            return color2[0];
-                        }else if(percentage <= color2[1]){
-                            return color3[0];
-                        }else if(percentage <= color3[1]){
-                            return color4[0];
+                        if(percentage <= colors[0].limit){
+                            return colors[0].code;
+                        }else if(percentage <= colors[1].limit){
+                            return colors[1].code;
+                        }else if(percentage <= colors[2].limit){
+                            return colors[2].code;
+                        }else if(percentage <= colors[3].limit){
+                            return colors[3].code;
                         }else{
-                            return color5[0];
+                            return colors[4].code;
                         }
                     })
                     .attr("data-fips", (countyDataItem)=>countyDataItem.id)
@@ -107,6 +148,7 @@
                                     educationData = data;
                                     console.log('educationData: ', educationData);
                                     drawMap();
+                                    drawLegend();
                                 };
                             }
                         );

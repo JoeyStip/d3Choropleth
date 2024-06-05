@@ -67,8 +67,6 @@
                 const minBachelors = Math.min(...bachelorsOrHigher);
                 const maxBachelors = Math.max(...bachelorsOrHigher);
 
-                
-
                 const legendThresholdScale = d3
                     .scaleBand()
                     .domain([colors.map((x)=>x.limit)])
@@ -91,6 +89,33 @@
                 legend
                     .append('g')
                     .call(legendAxis);
+
+                const squares = legend
+                    .append("g")
+                    .selectAll("rect")
+                    .data(
+                        legendThresholdScale.range().map((color)=>{
+                            let d = legendThresholdScale.invertExtent(color);
+                            if(d[0]===null){
+                                d[0]=legendXScale.domain()[0];
+                            };
+                            if(d[1]===null){
+                                d[1]=legendXScale.domain()[1];
+                            };
+                                return d;
+                            })
+                    )
+                    .enter()
+                    .append("rect")
+                    .style("fill", (d)=>{
+                        return legendThresholdScale(d[0]);
+                    })
+                    .attr("x", (d)=>legendXScale(d[0]))
+                    .attr("y", 0)
+                    .attr("width", (d)=>{
+                        return d[0] && d[1] ? legendXScale(d[1])-legendXScale(d[0]) : legendXScale(null)
+                    })
+                    .attr("height", legendH);
             };
 
             const canvas = svg

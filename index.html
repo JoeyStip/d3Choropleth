@@ -60,17 +60,17 @@
                 .attr('height', h)
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             
-            const drawLegend =()=>{
+            const drawLegend =()=> {
                 const legendW = 300;
-                const legendH = 200;
+                const legendH = 15;
                 const bachelorsOrHigher = educationData.map((x)=>x.bachelorsOrHigher);
                 const minBachelors = Math.min(...bachelorsOrHigher);
                 const maxBachelors = Math.max(...bachelorsOrHigher);
 
                 const legendThresholdScale = d3
-                    .scaleBand()
-                    .domain([colors.map((x)=>x.limit)])
-                    .range([colors.map((x)=>x.code)]);
+                    .scaleThreshold()
+                    .domain(colors.map((x)=>x.limit))
+                    .range(colors.map((x)=>x.code));
 
                 const legendXScale = d3
                     .scaleLinear()
@@ -79,7 +79,9 @@
 
                 const legendAxis = d3
                     .axisBottom()
-                    .scale(legendXScale);
+                    .scale(legendXScale)
+                    .tickSize(10, 0)
+                    .tickValues(legendThresholdScale.domain());
 
                 const legend = svg
                     .append("g")
@@ -96,10 +98,10 @@
                     .data(
                         legendThresholdScale.range().map((color)=>{
                             let d = legendThresholdScale.invertExtent(color);
-                            if(d[0]===null){
+                            if(d[0]===undefined){
                                 d[0]=legendXScale.domain()[0];
                             };
-                            if(d[1]===null){
+                            if(d[1]===undefined){
                                 d[1]=legendXScale.domain()[1];
                             };
                                 return d;
@@ -111,7 +113,7 @@
                         return legendThresholdScale(d[0]);
                     })
                     .attr("x", (d)=>legendXScale(d[0]))
-                    .attr("y", 0)
+                    .attr("y", 0-legendH)
                     .attr("width", (d)=>{
                         return d[0] && d[1] ? legendXScale(d[1])-legendXScale(d[0]) : legendXScale(null)
                     })

@@ -74,14 +74,15 @@
 
                 const legendXScale = d3
                     .scaleLinear()
-                    .domain([minBachelors, maxBachelors])
+                    .domain([0, maxBachelors])
                     .range([0, legendW]);
 
                 const legendAxis = d3
                     .axisBottom()
                     .scale(legendXScale)
                     .tickSize(10, 0)
-                    .tickValues(legendThresholdScale.domain());
+                    .tickValues([0, 15, 30, 45, 60, 75])
+                    .tickFormat((n)=> n + "%");
 
                 const legend = svg
                     .append("g")
@@ -115,7 +116,7 @@
                     .attr("x", (d)=>legendXScale(d[0]))
                     .attr("y", 0-legendH)
                     .attr("width", (d)=>{
-                        return d[0] && d[1] ? legendXScale(d[1])-legendXScale(d[0]) : legendXScale(null)
+                        return legendXScale(d[1])-legendXScale(d[0])
                     })
                     .attr("height", legendH);
             };

@@ -2,3 +2,17 @@ body {
     background-color: beige;
     text-align: center;
 }
+
+#tooltip {
+    opacity: 0;
+    width: fit-content;
+    height: auto;
+    background-color: white;
+    border: 1px solid black;
+    position:absolute;
+    z-index: 1;
+    padding:10px;
+    pointer-events: none;
+    text-align: left;
+    border-radius: 5px;
+}

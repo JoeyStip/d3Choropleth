@@ -92,8 +92,17 @@
                     .attr("transform", "translate(" + (w*.66) + ",15)")
                 
                 legend
+                    .append("text")
+                    .text("test")
+                    .attr("transform", "translate(50, -20)")
+                    .style("fill", "black")
+                    .attr("font-size", 15);
+
+                legend
                     .append('g')
-                    .call(legendAxis);
+                    .call(legendAxis)
+                
+                
 
                 const squares = legend
                     .append("g")

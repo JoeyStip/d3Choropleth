@@ -9,13 +9,13 @@
         <script src='https://unpkg.com/topojson-client@3'></script>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js'></script>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js'></script>
-        <div id="tooltip">hello</div>
+        <div id='tooltip'>hello</div>
 
         <script type='module'>
             import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 
-            const educationURL = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json'
-            const countyURL = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json'
+            const educationURL = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json';
+            const countyURL = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json';
 
             let countyData;
             let educationData;
@@ -37,23 +37,23 @@
             const h = 800 - margin.top - margin.bottom;
 
             const container = d3
-                .select("body")
-                .append("div")
-                .attr("id", "container");
+                .select('body')
+                .append('div')
+                .attr('id', 'container');
     
             const titleAndDescription = container
-                .append("div")
-                .attr("id", "titleAndSubtitle");
+                .append('div')
+                .attr('id', 'titleAndSubtitle');
                 
             const title = titleAndDescription
-                .append("h1")
-                .attr("id", "title")
-                .html("Education Attainment");
+                .append('h1')
+                .attr('id', 'title')
+                .html('Education Attainment');
 
             const description = titleAndDescription
-                .append("h2")
-                .attr("id", "description")
-                .html("Concentration of Bachelors attainment in the US by county");
+                .append('h2')
+                .attr('id', 'description')
+                .html('Concentration of Bachelors attainment in the US by county');
             
             const svg = d3
                 .select('#container')
@@ -62,11 +62,11 @@
                 .attr('height', h);
 
             const source = svg
-                .append("div")
-                .attr("width", 50)
-                .attr("height", 20)
+                .append('div')
+                .attr('width', 50)
+                .attr('height', 20)
                 .html(
-                    "source:<a href='https://www.ers.usda.gov/data-products/county-level-data-sets/county-level-data-sets-download-data/'>click here</a>"
+                    'source:<a href="https://www.ers.usda.gov/data-products/county-level-data-sets/county-level-data-sets-download-data/">click here</a>'
                 );
 
             const legendThresholdScale = d3
@@ -91,20 +91,20 @@
                     .scale(legendXScale)
                     .tickSize(10, 0)
                     .tickValues([0, ...colors.map((x)=>x.limit)])
-                    .tickFormat((n)=> n + "%");
+                    .tickFormat((n)=> n + '%');
 
                 const legend = svg
-                    .append("g")
-                    .attr("id", "legend")
-                    .attr("transform", "translate(" + (w*.6) + ", 50)")
+                    .append('g')
+                    .attr('id', 'legend')
+                    .attr('transform', 'translate(' + (w*.6) + ', 50)');
 
                 legend
                     .append('g')
                     .call(legendAxis);
                 
                 const squares = legend
-                    .append("g")
-                    .selectAll("rect")
+                    .append('g')
+                    .selectAll('rect')
                     .data(
                         legendThresholdScale.range().map((color)=>{
                             let d = legendThresholdScale.invertExtent(color);
@@ -118,30 +118,30 @@
                             })
                     )
                     .enter()
-                    .append("rect")
-                    .style("fill", (d)=>{
+                    .append('rect')
+                    .style('fill', (d)=>{
                         return legendThresholdScale(d[0]);
                     })
-                    .attr("x", (d)=>legendXScale(d[0]))
-                    .attr("y", 0-legendH)
-                    .attr("width", (d)=>{
+                    .attr('x', (d)=>legendXScale(d[0]))
+                    .attr('y', 0-legendH)
+                    .attr('width', (d)=>{
                         return legendXScale(d[1])-legendXScale(d[0])
                     })
-                    .attr("height", legendH);
+                    .attr('height', legendH);
 
                 legend
-                    .append("text")
-                    .text("Percent of Population with a Bachelors")
-                    .style("text-anchor", "middle")
-                    .attr("transform", "translate(" + (legendW/2) + ", 40)")
-                    .attr("font-size", 15)
-                    .attr("fill", "black");  
+                    .append('text')
+                    .text('Percent of Population with a Bachelors')
+                    .style('text-anchor', 'middle')
+                    .attr('transform', 'translate(' + (legendW/2) + ', 40)')
+                    .attr('font-size', 15)
+                    .attr('fill', 'black');  
             };
 
             const canvas = svg
-                .append("g")
-                .attr("id", "canvas")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                .append('g')
+                .attr('id', 'canvas')
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
                 
             const drawMap =()=> {
                 canvas.selectAll('path')
@@ -158,41 +158,40 @@
                         let percentage = county['bachelorsOrHigher'];
                         return legendThresholdScale(percentage);
                     })
-                    .attr("data-fips", (countyDataItem)=>countyDataItem.id)
-                    .attr("data-education", (countyDataItem)=>{
+                    .attr('data-fips', (countyDataItem)=>countyDataItem.id)
+                    .attr('data-education', (countyDataItem)=>{
                         let id = countyDataItem.id;
                         let county = educationData.find((item)=>{
                             return item.fips === id;
                         });
                         return county.bachelorsOrHigher;
                     })
-                    .on("mouseover", (event)=>{
+                    .on('mouseover', (event)=>{
                         let id = event.target.__data__.id;
                         let county = educationData.find((item)=> id===item.fips);
-                        console.log(event)
-                        d3.select("#tooltip")
-                            .style("opacity", 1)
-                            .style("transform", "translate(" + event.screenX + "px," + (event.screenY-110) + "px)")
+                        d3.select('#tooltip')
+                            .style('opacity', 1)
+                            .style('transform', 'translate(' + event.screenX + 'px,' + (event.screenY-110) + 'px)')
                             .html(
-                                'County: ' + county.area_name + "</br> " + 
+                                'County: ' + county.area_name + '</br> ' + 
                                 'state: ' + county.state + '</br>' + 
-                                'Bachelors: ' + county.bachelorsOrHigher + "%"
+                                'Bachelors: ' + county.bachelorsOrHigher + '%'
                             )
-                            .attr("data-education", county.bachelorsOrHigher)
+                            .attr('data-education', county.bachelorsOrHigher)
                         })
-                        .on("mouseout", ()=>{
-                            d3.select("#tooltip")
-                                .style("opacity", 0);
-                        })  
+                        .on('mouseout', ()=>{
+                            d3.select('#tooltip')
+                                .style('opacity', 0);
+                        });  
             };
 
             d3.json(countyURL).then(
                 (data, error) => {
                     if(error){
-                        console.log(log)
+                        console.log(log);
                     }else{
                         countyData = topojson.feature(data, data.objects.counties).features;
-                        console.log('countyData:', countyData)
+                        console.log('countyData:', countyData);
 
                         d3.json(educationURL).then(
                             (data, error) => {
@@ -211,6 +210,6 @@
             );
         </script>
         <script src='https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js'></script>
-        <div id="source">Source: <a href="https://www.ers.usda.gov/data-products/county-level-data-sets/county-level-data-sets-download-data/">USDA Economic Research</a></div>
+        <div id='source'>Source: <a href='https://www.ers.usda.gov/data-products/county-level-data-sets/county-level-data-sets-download-data/'>USDA Economic Research</a></div>
     </body>
 </html>

@@ -20,20 +20,20 @@
             let countyData;
             let educationData;
             const colors = [
-                {code:'#231942', limit: 15}, 
+                {code:'#F80BF8', limit: 15}, 
                 {code:'#5e548e', limit: 30}, 
                 {code:'#9f86c0', limit: 45}, 
-                {code: '#be95c4', limit: 60}, 
+                {code:'#be95c4', limit: 60}, 
                 {code:'#e0b1cb', limit: 75}
             ];
             const margin = {
                 left: 50,
                 right: 50,
                 bottom: 50,
-                top: 80
+                top: 50
             };
 
-            const w = 1200 - margin.left - margin.right;
+            const w = 1100 - margin.left - margin.right;
             const h = 800 - margin.top - margin.bottom;
 
             const container = d3
@@ -59,8 +59,20 @@
                 .select('#container')
                 .append('svg')
                 .attr('width', w)
-                .attr('height', h)
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                .attr('height', h);
+
+            const source = svg
+                .append("div")
+                .attr("width", 50)
+                .attr("height", 20)
+                .html(
+                    "source:<a href='https://www.ers.usda.gov/data-products/county-level-data-sets/county-level-data-sets-download-data/'>click here</a>"
+                );
+
+            const legendThresholdScale = d3
+                .scaleThreshold()
+                .domain(colors.map((x)=>x.limit))
+                .range(colors.toReversed().map((x)=>x.code));
             
             const drawLegend =()=> {
                 const legendW = 300;
@@ -68,11 +80,6 @@
                 const bachelorsOrHigher = educationData.map((x)=>x.bachelorsOrHigher);
                 const minBachelors = Math.min(...bachelorsOrHigher);
                 const maxBachelors = Math.max(...bachelorsOrHigher);
-
-                const legendThresholdScale = d3
-                    .scaleThreshold()
-                    .domain(colors.map((x)=>x.limit))
-                    .range(colors.map((x)=>x.code));
 
                 const legendXScale = d3
                     .scaleLinear()
@@ -83,27 +90,18 @@
                     .axisBottom()
                     .scale(legendXScale)
                     .tickSize(10, 0)
-                    .tickValues([0, 15, 30, 45, 60, 75])
+                    .tickValues([0, ...colors.map((x)=>x.limit)])
                     .tickFormat((n)=> n + "%");
 
                 const legend = svg
                     .append("g")
                     .attr("id", "legend")
-                    .attr("transform", "translate(" + (w*.66) + ",15)")
-                
-                legend
-                    .append("text")
-                    .text("test")
-                    .attr("transform", "translate(50, -20)")
-                    .style("fill", "black")
-                    .attr("font-size", 15);
+                    .attr("transform", "translate(" + (w*.6) + ", 50)")
 
                 legend
                     .append('g')
-                    .call(legendAxis)
+                    .call(legendAxis);
                 
-                
-
                 const squares = legend
                     .append("g")
                     .selectAll("rect")
@@ -130,11 +128,20 @@
                         return legendXScale(d[1])-legendXScale(d[0])
                     })
                     .attr("height", legendH);
+
+                legend
+                    .append("text")
+                    .text("Percent of Population with a Bachelors")
+                    .style("text-anchor", "middle")
+                    .attr("transform", "translate(" + (legendW/2) + ", 40)")
+                    .attr("font-size", 15)
+                    .attr("fill", "black");  
             };
 
             const canvas = svg
                 .append("g")
-                .attr("id", "canvas");
+                .attr("id", "canvas")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
                 
             const drawMap =()=> {
                 canvas.selectAll('path')
@@ -149,17 +156,7 @@
                             return item['fips'] === id;
                         });
                         let percentage = county['bachelorsOrHigher'];
-                        if(percentage <= colors[0].limit){
-                            return colors[0].code;
-                        }else if(percentage <= colors[1].limit){
-                            return colors[1].code;
-                        }else if(percentage <= colors[2].limit){
-                            return colors[2].code;
-                        }else if(percentage <= colors[3].limit){
-                            return colors[3].code;
-                        }else{
-                            return colors[4].code;
-                        }
+                        return legendThresholdScale(percentage);
                     })
                     .attr("data-fips", (countyDataItem)=>countyDataItem.id)
                     .attr("data-education", (countyDataItem)=>{
@@ -170,10 +167,9 @@
                         return county.bachelorsOrHigher;
                     })
                     .on("mouseover", (event)=>{
-                        //console.log(event.target.__data__, educationData);
                         let id = event.target.__data__.id;
                         let county = educationData.find((item)=> id===item.fips);
-                        console.log(county)
+                        console.log(event)
                         d3.select("#tooltip")
                             .style("opacity", 1)
                             .style("transform", "translate(" + event.screenX + "px," + (event.screenY-110) + "px)")
@@ -187,8 +183,7 @@
                         .on("mouseout", ()=>{
                             d3.select("#tooltip")
                                 .style("opacity", 0);
-                        })
-                        
+                        })  
             };
 
             d3.json(countyURL).then(
@@ -216,5 +211,6 @@
             );
         </script>
         <script src='https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js'></script>
+        <div id="source">Source: <a href="https://www.ers.usda.gov/data-products/county-level-data-sets/county-level-data-sets-download-data/">USDA Economic Research</a></div>
     </body>
 </html>
